@@ -1,0 +1,210 @@
+package oficial;
+
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Stack;
+
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.SymbolFactory;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+
+
+ action code {: 
+ 		
+ 		private Stack<DefaultMutableTreeNode> stackNodes = new Stack<DefaultMutableTreeNode>();
+ 		
+ 		private void addNonTerminal(java_cup.runtime.Symbol CUP$Parser$result,
+			int childs) {
+
+		DefaultMutableTreeNode node = newNode(CUP$Parser$result);
+
+		int y = childs;
+
+		int z = stackNodes.size();
+
+		while (childs > 0) {
+
+			node.add((MutableTreeNode) stackNodes.toArray()[z - childs]);
+
+			childs--;
+
+		}
+
+		while (y > 0) {
+
+			stackNodes.pop();
+
+			y--;
+
+		}
+
+		stackNodes.push(node);
+
+	}
+
+	private void addTerminal(java.util.Stack CUP$Parser$stack,
+			java_cup.runtime.Symbol CUP$Parser$result) {
+
+		DefaultMutableTreeNode node = newNode(CUP$Parser$result);
+
+		node.add(newNode((java_cup.runtime.Symbol) CUP$Parser$stack.peek()));
+
+		stackNodes.push(node);
+
+	}
+
+	private DefaultMutableTreeNode newNode(
+			java_cup.runtime.Symbol CUP$Parser$result) {
+
+		return new DefaultMutableTreeNode(nodeName(CUP$Parser$result));
+
+	}
+
+	private String nodeName(java_cup.runtime.Symbol CUP$Parser$result) {
+
+		return CUP$Parser$result.toString().split("Symbol: ")[1];
+
+	}
+
+	private void visualizarStack() {
+		System.out.println("\nStack:\t");
+		for (Object obj : stackNodes.toArray()) {
+
+			System.out.print(((DefaultMutableTreeNode) obj).toString() + " | ");
+
+		}
+		System.out
+				.println("\n---------------------------------------------------------------------------\n");
+	} 
+
+:};
+
+parser code {:
+
+	private DefaultMutableTreeNode tree;
+
+	public DefaultMutableTreeNode getTree() {
+		return tree;
+	}
+
+	public void setTree(DefaultMutableTreeNode tree) {
+		this.tree = tree;
+	}
+	
+	public static void main(String args[]) throws Exception {
+		File[] file = {
+				new File("src/oficial/programasEmTiny/lerEntrada.tiny"),
+				new File("src/oficial/programasEmTiny/fatorial.tiny"),
+				new File("src/oficial/programasEmTiny/exponencial.tiny"),
+				new File(
+						"src/oficial/programasEmTiny/contadorDeAlgarismos.tiny") };
+
+		SymbolFactory sf = new ComplexSymbolFactory();
+
+		Parser parser;
+
+		if (args.length == 0) {
+
+			parser = new Parser(new Scanner(new FileInputStream(file[1]), sf),
+					sf);
+
+		} else {
+
+			parser = new Parser(new Scanner(
+					new java.io.FileInputStream(args[0]), sf), sf);
+		}
+
+		parser.parse();
+
+		//return parser.getTree();
+
+	}
+
+:}
+
+terminal IF,THEN,ELSE,END,REPEAT,UNTIL,READ,WRITE,OP_ADD,OP_SUB,OP_MULT,OP_QUOC,OP_IGUAL,OP_MQ,OP_ATRIB,LPAREN,RPAREN,SEMI;
+terminal Integer NUMBER,ID;
+
+non terminal programa,sequencia_sent,sent,sent_if,sent_repeat,sent_assign,sent_read,sent_write,exp,exp_simple,term,op_comp,op_add,op_mult,if,then,end,else,repeat,until,id,op_atribb,read,write,lparen,rparen,semi;
+non terminal Integer op_factor,number;
+
+precedence left OP_ADD,OP_SUB;
+precedence left OP_MULT,OP_QUOC;
+
+
+programa ::= sequencia_sent {: System.out.println("programa ::= sequencia_sent"); //addNonTerminal(CUP$Parser$result, 1);//parser.setTree(stackNodes.pop()); :};
+
+sequencia_sent ::= sequencia_sent semi sent {: System.out.println("sequencia_sent ::= sequencia_sent semi sent");// addNonTerminal(CUP$Parser$result, 2); :}
+				 | sequencia_sent error sent {: System.err.println("Era esperado ponto-e-vírgula!"); :}
+				 | error semi sent {: System.err.println("Era esperado sequência de sentenças!"); :}			
+				 | sent {: System.out.println("sequencia_sent ::= sent");// addNonTerminal(CUP$Parser$result, 1); :};
+		  		 
+sent ::= sent_if {: System.out.println("sent ::= sent_if");// addNonTerminal(CUP$Parser$result, 1); :}
+       | sent_repeat {: System.out.println("sent ::= sent_repeat");// addNonTerminal(CUP$Parser$result, 1); :}
+       | sent_assign {: System.out.println("sent ::= sent_assign");// addNonTerminal(CUP$Parser$result, 1); :}
+       | sent_read {: System.out.println("sent ::= sent_read");// addNonTerminal(CUP$Parser$result, 1); :}
+       | sent_write {: System.out.println("sent ::= sent_write");// addNonTerminal(CUP$Parser$result, 1); :};
+       
+sent_if ::= if exp then sequencia_sent end {: System.out.println("sent_if ::= if exp then sequencia_sent end");// addNonTerminal(CUP$Parser$result, 6); :}		  
+		  | if exp then sequencia_sent else sequencia_sent end {: System.out.println("sent_if ::= if exp then sequencia_sent else sequencia_sent end");// addNonTerminal(CUP$Parser$result, 8); :};
+		  
+sent_repeat ::= repeat sequencia_sent until exp {: System.out.println("sent_repeat ::= repeat sequencia_sent until exp");// addNonTerminal(CUP$Parser$result, 5); :};
+			  
+sent_assign ::= id op_atribb exp {: System.out.println("sent_assign ::= id op_atribb exp semi");// addNonTerminal(CUP$Parser$result, 4); :};
+			  
+sent_read ::= read id {: System.out.println("sent_read ::= read id");// addNonTerminal(CUP$Parser$result, 3); :};
+			 
+sent_write ::= write exp {: System.out.println("sent_write ::= write exp");// addNonTerminal(CUP$Parser$result, 3); :};
+			 
+exp ::= exp_simple op_comp exp_simple {: System.out.println("exp ::= exp_simple op_comp exp_simple");// addNonTerminal(CUP$Parser$result, 3); :}
+      | exp_simple {: System.out.println("exp ::= exp_simple");// addNonTerminal(CUP$Parser$result, 1); :};
+	  
+exp_simple ::= exp_simple op_add exp_simple {: System.out.println("exp_simple ::= exp_simple op_add exp_simple");// addNonTerminal(CUP$Parser$result, 3); :}
+             | term {: System.out.println("exp_simple ::= term");// addNonTerminal(CUP$Parser$result, 1); :};
+	   		 
+term ::= term op_mult op_factor {: System.out.println("term ::= term op_mult op_factor");// addNonTerminal(CUP$Parser$result, 3); :}
+       | op_factor {: System.out.println("term ::= op_factor");// addNonTerminal(CUP$Parser$result, 1); :};
+	   
+op_factor ::= lparen exp rparen {: System.out.println("op_factor ::= lparen exp rparen");// addNonTerminal(CUP$Parser$result, 3); :}
+			| number {: System.out.println("op_factor ::= number");// addNonTerminal(CUP$Parser$result, 1); :}
+			| id {: System.out.println("op_factor ::= id");// addNonTerminal(CUP$Parser$result, 1); :};
+			
+op_mult ::= OP_MULT {: System.out.println("op_mult ::= OP_MULT");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :}
+		  | OP_QUOC {: System.out.println("op_mult ::= OP_QUOC");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+		  
+op_add ::= OP_ADD {: System.out.println("op_add ::= OP_ADD");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :}
+         | OP_SUB {: System.out.println("op_add ::= OP_SUB");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+         
+op_comp ::= OP_MQ {: System.out.println("op_comp ::= OP_MQ");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :}
+          | OP_IGUAL {: System.out.println("op_comp ::= OP_IGUAL");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+          
+if ::= IF {: System.out.println("if ::= IF");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+then ::= THEN {: System.out.println("then ::= THEN");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+end ::= END {: System.out.println("end ::= END");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+else ::= ELSE {: System.out.println("else ::= ELSE");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+repeat ::= REPEAT {: System.out.println("repeat ::= REPEAT");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+until ::= UNTIL {: System.out.println("until ::= UNTIL");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+id ::= ID {: System.out.println("id ::= ID");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+op_atribb ::= OP_ATRIB {: System.out.println("op_atribb ::= OP_ATRIB");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+read ::= READ {: System.out.println("read ::= READ");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+write ::= WRITE {: System.out.println("write ::= WRITE");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+number ::= NUMBER {: System.out.println("number ::= NUMBER");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+lparen ::= LPAREN {: System.out.println("lparen ::= LPAREN");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+rparen ::= RPAREN {: System.out.println("rparen ::= RPAREN");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};
+
+semi ::= SEMI {: System.out.println("semi ::= SEMI");// addTerminal(CUP$Parser$stack, CUP$Parser$result); :};

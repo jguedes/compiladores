@@ -1,0 +1,95 @@
+package compartilhado;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+import java_cup.runtime.Symbol;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.SymbolFactory;
+
+
+parser code {:
+	
+	public static void main(String args[]) throws Exception {
+	
+		File[] file = {
+				new File("src/compartilhado/lerEntrada.tiny"),
+				new File("src/compartilhado/fatorial.tiny"),
+				new File("src/compartilhado/exponencial.tiny") };
+
+		SymbolFactory sf = new ComplexSymbolFactory();
+
+		Parser parser = new Parser(new Scanner(new FileInputStream(file[1]), sf),sf);
+					
+		parser.parse();
+
+	}
+
+:}
+
+terminal IF,THEN,ELSE,END,REPEAT,UNTIL,READ,WRITE,OP_ADD,OP_SUB,OP_MULT,OP_QUOC,OP_IGUAL,OP_MQ,OP_ATRIB,LPAREN,RPAREN,SEMI;
+terminal Integer NUMBER,ID;
+
+non terminal programa,sequencia_sent,sent,sent_if,sent_repeat,sent_assign,sent_read,sent_write,if,then,else,repeat,until,op_boolean,op_add_or_sub,op_mult_or_quoc,exp,exp_simple,term,op_factor;
+non terminal Integer op_Integer;
+
+precedence left OP_ADD,OP_SUB;
+precedence left OP_MULT,OP_QUOC;
+
+programa ::= sequencia_sent {: System.out.println("programa ::= sequencia_sent"); :};
+
+sequencia_sent ::= sequencia_sent SEMI sent {: System.out.println("sequencia_sent ::= sequencia_sent SEMI sent"); :}
+				 | sequencia_sent error sent {: System.err.println("Era esperado ponto-e-vírgula!"); :}
+				 | error SEMI sent {: System.err.println("Era esperado sequência de sentenças!"); :}			
+				 | sent {: System.out.println("sequencia_sent ::= sent"); :};
+		  		 
+sent ::= sent_if {: System.out.println("sent ::= sent_if"); :}
+       | sent_repeat {: System.out.println("sent ::= sent_repeat"); :}
+       | sent_assign {: System.out.println("sent ::= sent_assign"); :}
+       | sent_read {: System.out.println("sent ::= sent_read"); :}
+       | sent_write {: System.out.println("sent ::= sent_write"); :};
+       
+sent_if ::= if then END {: System.out.println("sent_if ::= if then END"); :}		  
+		  | if then else END {: System.out.println("sent_if ::= if then else END"); :};
+		  
+sent_repeat ::= repeat until {: System.out.println("sent_repeat ::= repeat sequencia_sent until exp"); :};
+			  
+sent_assign ::= ID OP_ATRIB exp {: System.out.println("sent_assign ::= ID OP_ATRIB exp"); :};
+			  
+sent_read ::= READ ID {: System.out.println("sent_read ::= READ ID"); :};
+			 
+sent_write ::= WRITE exp {: System.out.println("sent_write ::= WRITE exp"); :};
+          
+if ::= IF exp {: System.out.println("if ::= IF exp"); :};
+
+then ::= THEN sequencia_sent {: System.out.println("then ::= THEN sequencia_sent"); :};
+
+else ::= ELSE sequencia_sent {: System.out.println("else ::= ELSE sequencia_sent"); :};
+
+repeat ::= REPEAT sequencia_sent {: System.out.println("repeat ::= REPEAT sequencia_sent"); :};
+
+until ::= UNTIL exp {: System.out.println("until ::= UNTIL exp"); :};
+
+exp ::= op_boolean {: System.out.println("exp ::= op_boolean"); :}
+      | exp_simple {: System.out.println("exp ::= exp_simple"); :};
+	  
+exp_simple ::= op_add_or_sub {: System.out.println("exp_simple ::= op_add_or_sub"); :}
+             | term {: System.out.println("exp_simple ::= term"); :};
+	   		 
+term ::= op_mult_or_quoc {: System.out.println("term ::= op_mult_or_quoc"); :}
+       | op_factor {: System.out.println("term ::= op_factor"); :};
+	   
+op_factor ::= LPAREN exp RPAREN {: System.out.println("op_factor ::= LPAREN exp RPAREN"); :}
+			| op_Integer {: System.out.println("op_factor ::= op_Integer"); :};
+
+op_Integer ::= NUMBER {: System.out.println("op_Integer ::= NUMBER"); :}
+			 | ID {: System.out.println("op_Integer ::= ID"); :};
+			
+op_mult_or_quoc ::= term OP_MULT op_factor {: System.out.println("op_mult_or_quoc ::= term OP_MULT op_factor"); :}
+		  		  | term OP_QUOC op_factor {: System.out.println("op_mult_or_quoc ::= term OP_QUOC op_factor"); :};
+		  
+op_add_or_sub ::= exp_simple OP_ADD exp_simple {: System.out.println("op_add_or_sub ::= exp_simple OP_ADD exp_simple"); :}
+         		| exp_simple OP_SUB exp_simple {: System.out.println("op_add_or_sub ::= exp_simple OP_SUB exp_simple"); :};
+         
+op_boolean ::= exp_simple OP_MQ exp_simple {: System.out.println("op_boolean ::= exp_simple OP_MQ exp_simple"); :}
+             | exp_simple OP_IGUAL exp_simple {: System.out.println("op_boolean ::= exp_simple OP_IGUAL exp_simple"); :};

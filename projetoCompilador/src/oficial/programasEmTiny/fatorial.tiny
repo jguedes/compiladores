@@ -1,0 +1,10 @@
+read x; { inteiro de entrada }
+if (0 < x) then
+	fact := 1;
+	repeat
+		fact := fact + (x - 5);
+		x := x + 1
+	until (x < 0);
+	write fact { apresenta o fatorial de x }
+end
+{ Exemplo de programa em TINY - fatorial }

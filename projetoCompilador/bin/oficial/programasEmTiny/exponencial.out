@@ -1,0 +1,61 @@
+1: { Exemplo de programa em TINY - exponencial }
+2: read x; { base }
+	2: reserved word: read 
+	2: ID, name= x
+	2: ; 
+3: read y; { expoente }
+	3: reserved word: read 
+	3: ID, name= y
+	3: ; 
+4: if 0 < x then
+	4: reserved word: if 
+	4: NUM, val= 0 
+	4: < 
+	4: ID, name= x 
+	4: reserved word: then
+5: 	if 0 < y then	
+	5: reserved word: if 
+	5: NUM, val= 0 
+	5: < 
+	5: ID, name= y 
+	5: reserved word: then
+6: 		produto := x;		
+	6: ID, name= produto 
+	6: := 
+	6: ID, name= x
+	6: ;
+7: 		repeat		
+	7: reserved word: repeat
+8: 			produto = produto * x;			
+	8: ID, name= produto 
+	8: = 
+	8: ID, name= produto 
+	8: * 
+	8: ID, name= x
+	8: ;
+9: 			y := y - 1;			
+	9: ID, name= y 
+	9: := 
+	9: ID, name= y 
+	9: - 
+	9: NUM, val= 1
+	9: ;
+10: 		until y = 1;		
+	10: reserved word: until 
+	10: ID, name= y 
+	10: = 
+	10: NUM, val= 1
+	10: ;
+11: 		write if 0 < x then { apresenta o produto da exponencial x elevado a y }		
+	11: reserved word: write 
+	11: reserved word: if 
+	11: NUM, val= 0 
+	11: < 
+	11: ID, name= x 
+	11: reserved word: then 
+12: 	end	
+	12: reserved word: end
+13: end
+	13: reserved word: end
+14: 
+	15: EOF

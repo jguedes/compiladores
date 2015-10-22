@@ -1,0 +1,22 @@
+1: { Exemplo de programa em TINY - area de quadrilatero }
+2: read x; { entrada da medida dum lado }
+	2: reserved word: read 
+	2: ID, name= x
+	2: ; 
+3: read y; { entrada da medida do lado imediato }
+	3: reserved word: read 
+	3: ID, name= y
+	3: ; 
+4: area := x * y;
+	4: ID, name= area 
+	4: := 
+	4: ID, name= x 
+	4: * 
+	4: ID, name= y
+	4: ;
+5: write area; { apresenta a area de quadrilatero de lados x e y }
+	5: reserved word: write 
+	5: ID, name= area
+	5: ; 
+6: 
+	7: EOF

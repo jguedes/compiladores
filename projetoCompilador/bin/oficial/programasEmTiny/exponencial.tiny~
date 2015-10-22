@@ -1,0 +1,14 @@
+{ Exemplo de programa em TINY - exponencial }
+read x; { base }
+read y; { expoente }
+if 0 < x then
+	if 0 < y then
+		produto := x;
+		repeat
+			produto = produto * x;
+			y := y - 1;
+		until y = 1;
+		write if 0 < x then { apresenta o produto da exponencial x^y }
+	end
+end
+

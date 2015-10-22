@@ -1,0 +1,18 @@
+{ programa em tiny para dizer a quantidade de algarismos de um numero}
+{ INICIAR VARIAVEIS }
+read x; { recebe o numero para contar os algarismos }
+y := 9; { maior numero de ordem Exemplo = unidade 9 - dezena 99 - centena 999 e por ai vai}
+q := 1; { quantidade q de algarismos }
+ok := 0; { q esta definido quando ok = 1 }
+{ CALCULAR }
+repeat
+	if y < x then { averigua se x maior que o maior numero da ordem atual }
+		y := (y * 10) + 9; { aumenta mais uma ordem em y }
+		q := q + 1; { incrementa q }
+	else
+		ok := 1; { se for siginifica que x esta na mesma ordem que y assim ok recebe 1}
+	end
+until ok = 1;
+{ SAIDA }
+write q; { apresenta a quantidade de algarismos em x }
+

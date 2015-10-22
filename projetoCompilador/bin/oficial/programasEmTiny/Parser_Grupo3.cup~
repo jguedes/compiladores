@@ -1,0 +1,60 @@
+//Fonte: https://www.cs.princeton.edu/~appel/modern/java/CUP/manual.html#about
+// CUP specification for a simple expression evaluator (w/ actions)
+
+import java_cup.runtime.*;
+
+/* Preliminaries to set up and use the scanner.  */
+init with {: scanner.init();              :};
+scan with {: return scanner.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal           "+","-","*","/","(",")",":=","<","=",";";
+terminal           end, else, then,write,repeat,until,read;
+terminal					 [\s\t\n\r]*,[a-z A-Z][a-z A-Z]*;
+terminal Integer   [0-9]*;
+
+/* Non-terminals */
+non terminal PROGRAMA,SEQUENCIA_SENT,SENT,SENT_IF,SENT_REPEAT,SENT_ASSIGN,SENT_READ,SENT_WRITE,EXP,OP_COMP,EXP_SIMPLE,OP_ADD,TERM,OP_MULT,OP_FACTOR;
+
+non terminal Integer    num;
+
+/* Precedences */
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE, MOD;
+precedence left UMINUS;
+
+/* The grammar */
+expr_list ::= expr_list expr_part 
+	      | 
+              expr_part;
+
+expr_part ::= expr:e 
+	      {: System.out.println("= " + e); :} 
+              SEMI              
+	      ;
+
+expr      ::= expr:e1 PLUS expr:e2    
+	      {: RESULT = new Integer(e1.intValue() + e2.intValue()); :} 
+	      | 
+              expr:e1 MINUS expr:e2    
+              {: RESULT = new Integer(e1.intValue() - e2.intValue()); :} 
+	      | 
+              expr:e1 TIMES expr:e2 
+	      {: RESULT = new Integer(e1.intValue() * e2.intValue()); :} 
+	      | 
+              expr:e1 DIVIDE expr:e2 
+	      {: RESULT = new Integer(e1.intValue() / e2.intValue()); :} 
+	      | 
+              expr:e1 MOD expr:e2 
+	      {: RESULT = new Integer(e1.intValue() % e2.intValue()); :} 
+	      | 
+              NUMBER:n                 
+	      {: RESULT = n; :} 
+	      | 
+              MINUS expr:e             
+	      {: RESULT = new Integer(0 - e.intValue()); :} 
+	      %prec UMINUS
+	      | 
+              LPAREN expr:e RPAREN     
+	      {: RESULT = e; :} 
+	      ;

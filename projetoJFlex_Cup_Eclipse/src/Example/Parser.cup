@@ -1,0 +1,42 @@
+package Example;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.SymbolFactory;
+
+parser code {:
+	public static void main(String args[]) throws Exception {
+		File file = new File("src/Example/input.test");
+
+		SymbolFactory sf = new ComplexSymbolFactory();
+
+		if (args.length == 0)
+			new Parser(new Scanner(new FileInputStream(file), sf), sf).parse();
+		else
+			new Parser(new Scanner(new java.io.FileInputStream(args[0]), sf),
+					sf).parse();
+	}
+:}
+
+terminal SEMI, PLUS, TIMES, LPAREN, RPAREN;
+terminal Integer NUMBER;
+
+non terminal expr_list, expr_part;
+non terminal Integer expr;
+
+precedence left PLUS;
+precedence left TIMES;
+
+expr_list ::= expr_list expr_part {: System.out.println("expr_list ::= expr_list expr_part"); :}
+              | expr_part {: System.out.println("expr_list ::= expr_part"); :};
+expr_part ::= expr:e {: System.out.println("expr_part ::= expr"); :} SEMI;
+expr      ::= NUMBER:n
+	      {: RESULT=n;System.out.println("expr ::= NUMBER"); :}
+            | expr:l PLUS expr:r
+	      {: RESULT=new Integer(l.intValue() + r.intValue()); System.out.println("expr ::= expr PLUS expr"); :}
+	    | expr:l TIMES expr:r
+	      {: RESULT=new Integer(l.intValue() * r.intValue()); System.out.println("expr ::= expr TIMES expr"); :}
+	    | LPAREN expr:e RPAREN
+	      {: RESULT=e; System.out.println("expr ::= LPAREN expr RPAREN"); :}
+	    ;

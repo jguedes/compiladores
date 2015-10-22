@@ -1,0 +1,55 @@
+{ programa em tiny para inverter numero exemplo entrada = 234 saida = 432}
+read x; { recebe o numero para contar os algarismos }
+{ primeiro calcular a quantidade de algarismos do numero para definir a ordem dele}
+{ INICIAR VARIAVEIS }
+y := 9; { maior numero de ordem Exemplo = unidade 9 - dezena 99 - centena 999 e por ai vai}
+q := 1; { quantidade q de algarismos }
+ok := 0; { q esta definido quando ok = 1 }
+{ CALCULAR }
+repeat
+	if y < x then { averigua se x maior que o maior numero da ordem atual }
+		y := (y * 10) + 9; { aumenta mais uma ordem em y }
+		q := q + 1; { incrementa q }
+	else
+		ok := 1; { se for siginifica que x esta na mesma ordem que y assim ok recebe 1}
+	end
+until ok = 1;
+{  }
+if q = 1 then
+	write x;
+else
+	menorNumeroDeOrdem := 1;
+	repeat
+		menorNumeroDeOrdem := menorNumeroDeOrdem * 10;
+		q := q - 1;
+	until q = 1;
+	algarismoDeOrdem := 1;
+	
+end
+{ sei a quantidade q de algarismos do numero num
+	por exemplo se num = 234 entao q = 3 algarismos
+	para descobrir o algarismo da centena
+	passo 1 --
+			pode-se comparar num < (i * menorNumeroDeOrdem)
+			onde 0 < i e inicialmente i = 1 e
+			menorNumeroDeOrdem = 10 elevado a ordem
+			onde ordem = ( q - 1)
+			se a resposta for sim
+			incrementa-se 1 a i e compara-se novamente
+			se a resposta for negativa
+			decrementa-se 1 a i encontrando-se o valor
+			do algarismo da ordem atual
+	passo 2 --
+			efetua-se num = num - (i * menorNumeroDeOrdem)
+	passo 3 --
+			instacia-se a variavel
+			numInvertido = numInvertido + ( i * (10 elevado a (q - (ordem + 1))))
+			decrementa-se 1 a ordem
+			compara-se ordem < 0
+			se negativo
+			volta-se para passo 1
+			se positivo
+			para
+	 }
+
+

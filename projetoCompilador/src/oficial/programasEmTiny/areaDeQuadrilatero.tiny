@@ -1,0 +1,6 @@
+{ Exemplo de programa em TINY - area de quadrilatero }
+read x; { entrada da medida dum lado }
+read y; { entrada da medida do lado imediato }
+area := x * y;
+write area; { apresenta a area de quadrilatero de lados x e y }
+
